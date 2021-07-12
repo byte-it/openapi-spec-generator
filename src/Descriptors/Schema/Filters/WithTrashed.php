@@ -9,7 +9,7 @@ use LaravelJsonApi\Eloquent\Filters\WithTrashed as WithTrashedFilter;
 
 class WithTrashed extends BooleanFilter
 {
-    public static function canDescribe(mixed $entity): bool
+    public static function canDescribe($entity): bool
     {
         return $entity instanceof WithTrashedFilter;
     }

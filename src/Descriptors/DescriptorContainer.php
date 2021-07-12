@@ -46,7 +46,7 @@ class DescriptorContainer
       Actions\CustomAction::class,
     ];
 
-    public function getDescriptor(mixed $needsDescription): Descriptor
+    public function getDescriptor($needsDescription): Descriptor
     {
         if (
           $needsDescription instanceof SelfDescribing
@@ -64,11 +64,14 @@ class DescriptorContainer
             return $for->getDescriptor();
         }
 
-        return match (true) {
-            $for instanceof Filter => $this->getFilterDescriptor($for),
-            $for instanceof Route => $this->getActionDescriptor($for),
-            default => throw new LogicException("Can't describe ".$for::class)
-        };
+        switch ($for) {
+          case $for instanceof Filter;
+            return $this->getFilterDescriptor($for);
+          case $for instanceof Route;
+            return $this->getActionDescriptor($for);
+          default;
+            throw new LogicException("Can't describe ". get_class($for));
+        }
     }
 
     protected function getFilterDescriptor(Filter $for): ?Descriptor
@@ -78,7 +81,7 @@ class DescriptorContainer
                 return new $descriptor();
             }
         }
-        throw new LogicException("Can resolve Descriptor for ".$for::class);
+        throw new LogicException("Can resolve Descriptor for ". get_class($for));
     }
 
     protected function getActionDescriptor(Route $for): ?Descriptor

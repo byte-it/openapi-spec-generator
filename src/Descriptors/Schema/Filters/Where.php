@@ -18,7 +18,7 @@ use LaravelJsonApi\OpenApiSpec\Actions\GenerateOpenAPISpec;
 class Where extends FilterDescriptor
 {
 
-    public static function canDescribe(mixed $entity): bool
+    public static function canDescribe($entity): bool
     {
         return $entity instanceof WhereFilter;
     }
@@ -45,7 +45,7 @@ class Where extends FilterDescriptor
                   ];
               })
               ->toArray();
-        } catch (Exception) {
+        } catch (Exception $e) {
             $examples = [];
         }
 

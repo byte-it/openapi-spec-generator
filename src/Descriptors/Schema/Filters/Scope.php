@@ -8,7 +8,7 @@ use LaravelJsonApi\Eloquent\Filters\Scope as ScopeFilter;
 
 class Scope extends BooleanFilter
 {
-    public static function canDescribe(mixed $entity): bool
+    public static function canDescribe($entity): bool
     {
         return $entity instanceof ScopeFilter;
     }

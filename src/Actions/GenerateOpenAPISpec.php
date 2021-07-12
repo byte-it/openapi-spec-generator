@@ -141,8 +141,8 @@ class GenerateOpenAPISpec
      *
      */
     protected function generateOperationForMethod(
-      mixed $method,
-      \Illuminate\Routing\Route $route,
+      $method,
+      \Illuminate\Routing\Route $route
     ): void {
 
         $routeNameSegments = explode('.', $route->getName());
@@ -192,7 +192,7 @@ class GenerateOpenAPISpec
     public function generateOAGetDataSchema(
       Schema $schema,
       string $schemaName,
-      string $schemaNamePlural,
+      string $schemaNamePlural
     ): Reference {
         $oaSchemaName = $schemaName.'_data';
         if ( ! ($ref = $this->hasSchema($oaSchemaName))) {
@@ -218,19 +218,29 @@ class GenerateOpenAPISpec
                     if($field->isHidden(null)){
                         continue;
                     }
-                    $fieldSchema->type = match (true) {
-                        $field instanceof Boolean => Type::BOOLEAN,
-                        $field instanceof Number => Type::NUMBER,
-                        $field instanceof ArrayList => Type::ARRAY,
-                        $field instanceof ArrayHash,
-                          $field instanceof Map => Type::OBJECT,
-                        default => Type::STRING
-                    };
+
+                    switch ($field){
+                      case $field instanceof Boolean:
+                        $fieldSchema->type = Type::BOOLEAN;
+                        break;
+                      case $field instanceof Number:
+                        $fieldSchema->type = Type::NUMBER;
+                        break;
+                      case $field instanceof ArrayList:
+                        $fieldSchema->type = Type::ARRAY;
+                        break;
+                      case $field instanceof ArrayHash:
+                      case $field instanceof Map:
+                        $fieldSchema->type = Type::OBJECT;
+                        break;
+                      default:
+                        $fieldSchema->type = Type::STRING;
+                    }
 
                     // Try to get example data
                     try {
                         $fieldSchema->example = $fieldValues[$field->name()];
-                    } catch (Throwable) {
+                    } catch (Throwable $e) {
                     }
 
                 } elseif ($field instanceof Relation) {
@@ -317,7 +327,7 @@ class GenerateOpenAPISpec
                 "id" => new OASchema([
                   'title' => 'id',
                   'type' => Type::STRING,
-                  "example" => $resource?->id(),
+                  "example" => isset($resource) ? $resource->id() : NULL,
                 ]),
                 "attributes" => new OASchema([
                   'title' => 'attributes',
@@ -355,7 +365,7 @@ class GenerateOpenAPISpec
     public function generateOAGetResponseSchema(
       Schema $schema,
       string $schemaName,
-      string $schemaNamePlural,
+      string $schemaNamePlural
     ): Reference {
         $oaSchemaName = $schemaName.'_get_single';
         if ( ! ($ref = $this->hasSchema($oaSchemaName))) {
@@ -389,7 +399,7 @@ class GenerateOpenAPISpec
     public function generateOAGetMultipleResponseSchema(
       Schema $schema,
       string $schemaName,
-      string $schemaNamePlural,
+      string $schemaNamePlural
     ): Reference {
         $oaSchemaName = $schemaName.'_get_multiple';
         if ( ! ($ref = $this->hasSchema($oaSchemaName))) {
@@ -417,7 +427,7 @@ class GenerateOpenAPISpec
     public function generateOAStoreRequestBody(
       Schema $schema,
       string $schemaName,
-      string $schemaNamePlural,
+      string $schemaNamePlural
     ): Reference {
 
         $requestName = $schemaName."_store";
@@ -446,19 +456,28 @@ class GenerateOpenAPISpec
                         continue;
                     }
 
-                    $fieldSchema->type = match (true) {
-                        $field instanceof Boolean => Type::BOOLEAN,
-                        $field instanceof Number => Type::NUMBER,
-                        $field instanceof ArrayList => Type::ARRAY,
-                        $field instanceof ArrayHash,
-                          $field instanceof Map => Type::OBJECT,
-                        default => Type::STRING
-                    };
+                    switch ($field){
+                      case $field instanceof Boolean:
+                        $fieldSchema->type = Type::BOOLEAN;
+                        break;
+                      case $field instanceof Number:
+                        $fieldSchema->type = Type::NUMBER;
+                        break;
+                      case $field instanceof ArrayList:
+                        $fieldSchema->type = Type::ARRAY;
+                        break;
+                      case $field instanceof ArrayHash:
+                      case $field instanceof Map:
+                        $fieldSchema->type = Type::OBJECT;
+                        break;
+                      default:
+                        $fieldSchema->type = Type::STRING;
+                    }
 
                     // Try to get example data
                     try {
-                        $fieldSchema->example = $model?->{$field->column()};
-                    } catch (Throwable) {
+                        $fieldSchema->example = isset($model) ? $model->{$field->column()} : NULL;
+                    } catch (Throwable $e) {
                     }
 
                 } elseif ($field instanceof Relation) {
@@ -563,7 +582,7 @@ class GenerateOpenAPISpec
     public function generateOAUpdateRequestBody(
       Schema $schema,
       string $schemaName,
-      string $schemaNamePlural,
+      string $schemaNamePlural
     ): Reference {
 
         $requestName = $schemaName."_update";
@@ -590,19 +609,29 @@ class GenerateOpenAPISpec
                     if($field->isReadOnly(null)){
                         continue;
                     }
-                    $fieldSchema->type = match (true) {
-                        $field instanceof Boolean => Type::BOOLEAN,
-                        $field instanceof Number => Type::NUMBER,
-                        $field instanceof ArrayList => Type::ARRAY,
-                        $field instanceof ArrayHash,
-                          $field instanceof Map => Type::OBJECT,
-                        default => Type::STRING
-                    };
+
+                  switch ($field){
+                    case $field instanceof Boolean:
+                      $fieldSchema->type = Type::BOOLEAN;
+                      break;
+                    case $field instanceof Number:
+                      $fieldSchema->type = Type::NUMBER;
+                      break;
+                    case $field instanceof ArrayList:
+                      $fieldSchema->type = Type::ARRAY;
+                      break;
+                    case $field instanceof ArrayHash:
+                    case $field instanceof Map:
+                      $fieldSchema->type = Type::OBJECT;
+                      break;
+                    default:
+                      $fieldSchema->type = Type::STRING;
+                  }
 
                     // Try to get example data
                     try {
-                        $fieldSchema->example = $model?->{$field->column()};
-                    } catch (Throwable) {
+                        $fieldSchema->example = isset($model) ? $model->{$field->column()} : NULL;
+                    } catch (Throwable $e) {
                     }
 
                 } elseif ($field instanceof Relation) {
@@ -888,13 +917,14 @@ class GenerateOpenAPISpec
     }
 
     /**
+     * @return Reference|bool
      * @throws \cebe\openapi\exceptions\TypeErrorException
      */
-    protected function hasSchema(string $name): Reference|bool
+    protected function hasSchema(string $name)
     {
-        return isset($this->openApi->components->schemas[$name]) ?
-          new Reference(['$ref' => "#/components/schemas/$name"]) :
-          false;
+      return isset($this->openApi->components->schemas[$name]) ?
+        new Reference(['$ref' => "#/components/schemas/$name"]) :
+        false;
     }
 
     /**
@@ -910,9 +940,10 @@ class GenerateOpenAPISpec
     }
 
     /**
+     * @return Reference|bool
      * @throws \cebe\openapi\exceptions\TypeErrorException
      */
-    protected function hasRequestBody(string $name): Reference|bool
+    protected function hasRequestBody(string $name)
     {
         return isset($this->openApi->components->requestBodies[$name]) ?
           new Reference(['$ref' => "#/components/requestBodies/$name"]) :

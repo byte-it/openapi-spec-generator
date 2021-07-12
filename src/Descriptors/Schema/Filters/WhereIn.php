@@ -18,7 +18,7 @@ use LaravelJsonApi\OpenApiSpec\Actions\GenerateOpenAPISpec;
 class WhereIn extends FilterDescriptor
 {
 
-    public static function canDescribe(mixed $entity): bool
+    public static function canDescribe($entity): bool
     {
         return $entity instanceof WhereInFilter;
     }
@@ -51,7 +51,7 @@ class WhereIn extends FilterDescriptor
                   ];
               })
               ->toArray();
-        } catch (Exception) {
+        } catch (Exception $e) {
             $examples = [];
         }
 

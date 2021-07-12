@@ -21,8 +21,8 @@ abstract class FilterDescriptor implements Descriptor
     public function describe(
       GenerateOpenAPISpec $generator,
       Schema $schema,
-      mixed $entity
-    ): mixed {
+      $entity
+    ) {
         return $this->describeFilter($generator,$schema, $entity);
     }
 

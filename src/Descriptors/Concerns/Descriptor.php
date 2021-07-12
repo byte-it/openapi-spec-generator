@@ -9,7 +9,7 @@ use LaravelJsonApi\OpenApiSpec\Actions\GenerateOpenAPISpec;
 
 interface Descriptor
 {
-    public function describe(GenerateOpenAPISpec $generator, Schema $schema, mixed $entity): mixed;
+    public function describe(GenerateOpenAPISpec $generator, Schema $schema, $entity);
 
-    public static function canDescribe(mixed $entity): bool;
+    public static function canDescribe($entity): bool;
 }

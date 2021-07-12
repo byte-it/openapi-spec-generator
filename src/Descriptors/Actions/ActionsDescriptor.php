@@ -39,7 +39,10 @@ abstract class ActionsDescriptor implements Descriptor
 
     protected Responses $responses;
 
-    protected Reference|RequestBody|null $requestBody = null;
+    /**
+     * @var \cebe\openapi\spec\Reference|\cebe\openapi\spec\RequestBody|null
+     */
+    protected $requestBody = null;
 
     /**
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
@@ -50,7 +53,7 @@ abstract class ActionsDescriptor implements Descriptor
     }
 
 
-    public static function canDescribe(mixed $entity): bool
+    public static function canDescribe($entity): bool
     {
         return $entity instanceof Route
           && static::describesRelation() === ($entity->relation !== null)
@@ -69,8 +72,8 @@ abstract class ActionsDescriptor implements Descriptor
     public function describe(
       GenerateOpenAPISpec $generator,
       Schema $schema,
-      mixed $entity
-    ): mixed {
+       $entity
+    ) {
 
         $this->server = $generator->getJsonapiServer();
 
