@@ -49,6 +49,7 @@ class GenerateTest extends TestCase
       $spec = Yaml::parse($openapiYaml);
 
       $this->assertArrayHasKey('/posts', $spec['paths'], 'Path to resource is not replaced correctly.');
+      $this->assertArrayHasKey('/posts/{post}/relationships/author', $spec['paths'], 'Path to resource is not replaced correctly.');
 
       $this->assertEquals('http://localhost/api/v1', $spec['servers'][0]['variables']['serverUrl']['default']);
     }

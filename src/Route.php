@@ -5,6 +5,7 @@ namespace LaravelJsonApi\OpenApiSpec;
 
 
 use Illuminate\Routing\Route as IlluminateRoute;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use LaravelJsonApi\Contracts\Schema\PolymorphicRelation;
 use LaravelJsonApi\Contracts\Schema\Relation;
@@ -94,12 +95,7 @@ class Route
             $this->action = $action;
         }
 
-
-        $this->uri = str_replace(
-          $route->getPrefix(),
-          '',
-          $route->uri()
-        );
+        $this->setUriForRoute();
 
         [$controller, $method] = explode('@', $this->route->getActionName(), 2);
 
@@ -284,5 +280,20 @@ class Route
           $server->name(),
         );
     }
+
+  protected function setUriForRoute(): void {
+    $domain = URL::to('/');
+    $serverBasePath = str_replace(
+      $domain,
+      '',
+      $this->server->url(),
+    );
+
+    $this->uri = str_replace(
+      $serverBasePath,
+      '',
+      '/' . $this->route->uri(),
+    );
+  }
 
 }
