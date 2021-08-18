@@ -35,6 +35,8 @@ class GenerateTest extends TestCase
 
         $spec = json_decode($output, true);
 
+        file_put_contents('output.json', $output);
+
         $this->assertEquals('My JSON:API', $spec['info']['title']);
     }
 
@@ -49,18 +51,4 @@ class GenerateTest extends TestCase
         $this->assertEquals('My JSON:API', $spec['info']['title']);
     }
 
-    public function test_url_is_properly_parsed()
-    {
-      GeneratorFacade::generate('v1');
-
-      $openapiYaml = GeneratorFacade::generate('v1');
-
-      $spec = Yaml::parse($openapiYaml);
-
-      $this->assertArrayHasKey('/posts', $spec['paths'], 'Path to resource is not replaced correctly.');
-      
-      $this->assertArrayHasKey('/posts/{post}/relationships/author', $spec['paths'], 'Path to resource is not replaced correctly.');
-
-      $this->assertEquals('http://localhost/api/v1', $spec['servers'][0]['variables']['serverUrl']['default']);
-    }
 }
