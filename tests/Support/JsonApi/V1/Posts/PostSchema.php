@@ -69,7 +69,7 @@ class PostSchema extends Schema
         return [
             HashId::make()->alreadyHashed(),
             BelongsTo::make('author')->type('users')->readOnly(),
-            HasMany::make('comments')->readOnly(),
+            HasMany::make('comments'),
             Str::make('content'),
             DateTime::make('createdAt')->sortable()->readOnly(),
             SoftDelete::make('deletedAt')->sortable(),
